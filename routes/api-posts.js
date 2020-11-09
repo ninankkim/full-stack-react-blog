@@ -1,35 +1,37 @@
-var express = require('express');
-var router = express.Router();
-var models = require('../models');
+const express = require('express');
+const router = express.Router();
+const models = require('../models');
 
-//GET ALL POSTS
-router.get('/', function (req, res) {
+// Get All Posts
+// GET /api/v1/posts/
+router.get('/', function(req, res) {
   models.Post.findAll()
     .then(posts => {
       res.json(posts)
     })
 });
 
-//GET 1 POST BY ID 
-
+// Get 1 Post by ID
+// GET /api/v1/posts/102
 router.get('/:id', (req, res) => {
   models.Post.findByPk(req.params.id)
     .then(post => {
       if (post) {
         res.json(post)
       } else {
-        res.status(400).json({
+        res.status(404).json({
           error: 'Post not found'
         })
       }
     })
 })
 
-//UPDATE POST
-router.put('/', (req, res) => {
-  if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published) {
+// Update Post
+// PUT /api/v1/posts/101
+router.put('/:id', (req, res) => {
+  if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published ) {
     res.status(400).json({
-      error: 'Please submit all required fields!'
+      error: 'Please submit all required fields'
     })
     return;
   }
@@ -44,9 +46,9 @@ router.put('/', (req, res) => {
     }
   })
     .then(updated => {
-      if (updated & updated[0] === 1) {
+      if (updated && updated[0] === 1) {
         res.status(202).json({
-          success: 'Post is updated'
+          success: 'Post Updated'
         });
       } else {
         res.status(404).json({
@@ -56,11 +58,12 @@ router.put('/', (req, res) => {
     })
 })
 
-//CREATE NEW POST
-router.get('/', (req, res) => {
-  if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published) {
+// Create new Post
+// POST /api/v1/posts/
+router.post('/', (req, res) => {
+  if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published ) {
     res.status(400).json({
-      error: 'Please submit all required fields!'
+      error: 'Please submit all required fields'
     })
     return;
   }
@@ -75,8 +78,8 @@ router.get('/', (req, res) => {
     })
 })
 
-
-//DELETE POST
+// Delete Post
+// DELETE /api/v1/posts/101
 router.delete('/:id', (req, res) => {
   models.Post.destroy({
     where: {
@@ -86,8 +89,8 @@ router.delete('/:id', (req, res) => {
     .then(deleted => {
       if (deleted === 1) {
         res.status(202).json({
-          success: 'Post is deleted'
-        })
+          success: 'Post deleted'
+        });
       } else {
         res.status(404).json({
           error: 'Post not found'
@@ -95,6 +98,54 @@ router.delete('/:id', (req, res) => {
       }
     })
 })
+
+// GET /api/v1/posts/102/comments
+router.get('/:postId/comments', (req, res) => {
+  models.Comment.findAll({
+    where: {
+      PostId: req.params.postId
+    }
+  })
+    .then(comments => {
+      res.json(comments);
+    })
+})
+
+// example URL:
+// POST /api/v1/posts/102/comments
+router.post('/:postId/comments', (req, res) => {
+  if (!req.body || !req.body.author || !req.body.content) {
+    res.status(400).json({
+      error: 'Please include all required fields'
+    })
+    return;
+  }
+
+  models.Post.findByPk(req.params.postId)
+    .then(post => {
+      if (!post) {
+        res.status(404).json({
+          error: "Can't create comment for post that doesn't exist"
+        })
+      }
+      return post.createComment({
+        author: req.body.author,
+        content: req.body.content,
+        approved: true
+      });
+    })
+    .then(comment => {
+      res.json({
+        success: 'Comment added',
+        comment: comment
+      })
+    })
+});
+
+module.exports = router;
+
+
+
 
 // CRUD OR BREAD = BROWSE, READ, EDIT, ADD, DELETE
 //BROWSE GETS ALL POSTS
