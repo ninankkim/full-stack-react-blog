@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import { Dimmer, Header, Image, Loader, Segment } from 'semantic-ui-react';
 import textImage from '../short-paragraph.png';
+import Comments from '../components/Comments';
 
 export default function PostDetail() {
     const [post, setPost] = useState(null);
@@ -34,6 +35,7 @@ export default function PostDetail() {
                 {post.content.split('\n').map((paragraph, i) => {
                     return <p key={i}>{paragraph}</p>
                 })}
+                <Comments />
                 <Link to="/">&larr; Back</Link>
             </Segment>
         </>
