@@ -1,12 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var models = require('../models');
+const express = require('express');
+const router = express.Router();
+const models = require('../models');
 
-//PUT /api/v1/comments/:commentId
+//PUT /api/v1/comments/1212
 router.put('/:commentId', (req, res) => {
     if (!req.body || !req.body.author || !req.body.content || (!req.body.approved && req.body.approved !== false)) {
         res.status(400).json({
-            error: 'Please submit all required fields!'
+            error: 'Please submit all required fields'
         })
         return;
     }
@@ -14,7 +14,7 @@ router.put('/:commentId', (req, res) => {
     models.Comment.update({
         author: req.body.author,
         content: req.body.content,
-        approved: req.body.approved !== 'false' && req.body.approved !== 'false' ? true : false
+        approved: req.body.approved !== 'false' && req.body.approved !== false ? true : false
     }, {
         where: {
             id: req.params.commentId
@@ -23,7 +23,7 @@ router.put('/:commentId', (req, res) => {
         .then(updated => {
             if (updated && updated[0] === 1) {
                 res.status(202).json({
-                    success: 'Comment is updated'
+                    success: 'Comment Updated'
                 });
             } else {
                 res.status(404).json({
@@ -33,19 +33,18 @@ router.put('/:commentId', (req, res) => {
         })
 })
 
-
-//DELETE /api/v1/comments/:commentId
+//DELETE /api/v1/comments/2323
 router.delete('/:commentId', (req, res) => {
     models.Comment.destroy({
         where: {
-            id: req.params.id
+            id: req.params.commentId
         }
     })
         .then(deleted => {
             if (deleted === 1) {
                 res.status(202).json({
-                    success: 'Comment is deleted'
-                })
+                    success: 'Comment deleted'
+                });
             } else {
                 res.status(404).json({
                     error: 'Comment not found'
@@ -53,7 +52,5 @@ router.delete('/:commentId', (req, res) => {
             }
         })
 })
-
-
 
 module.exports = router;

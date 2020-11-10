@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 
-// Get All Posts
-// GET /api/v1/posts/
+//It gets all the posts - GET /api/v1/posts
 router.get('/', function(req, res) {
   models.Post.findAll()
     .then(posts => {
@@ -11,8 +10,7 @@ router.get('/', function(req, res) {
     })
 });
 
-// Get 1 Post by ID
-// GET /api/v1/posts/102
+//It gets 1 post by ID - GET /api/v1/posts/102
 router.get('/:id', (req, res) => {
   models.Post.findByPk(req.params.id)
     .then(post => {
@@ -26,8 +24,7 @@ router.get('/:id', (req, res) => {
     })
 })
 
-// Update Post
-// PUT /api/v1/posts/101
+//It will update the post - PUT /api/v1/posts/101
 router.put('/:id', (req, res) => {
   if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published ) {
     res.status(400).json({
@@ -58,8 +55,7 @@ router.put('/:id', (req, res) => {
     })
 })
 
-// Create new Post
-// POST /api/v1/posts/
+//It will create a new post - POST /api/v1/posts/
 router.post('/', (req, res) => {
   if (!req.body || !req.body.author || !req.body.title || !req.body.content || !req.body.published ) {
     res.status(400).json({
@@ -78,8 +74,8 @@ router.post('/', (req, res) => {
     })
 })
 
-// Delete Post
-// DELETE /api/v1/posts/101
+
+//It will delete a post - DELETE /api/v1/posts/101
 router.delete('/:id', (req, res) => {
   models.Post.destroy({
     where: {
@@ -99,7 +95,7 @@ router.delete('/:id', (req, res) => {
     })
 })
 
-// GET /api/v1/posts/102/comments
+// (Example URL) GET /api/v1/posts/102/comments
 router.get('/:postId/comments', (req, res) => {
   models.Comment.findAll({
     where: {
@@ -111,8 +107,7 @@ router.get('/:postId/comments', (req, res) => {
     })
 })
 
-// example URL:
-// POST /api/v1/posts/102/comments
+// (EXAMPLE URL) POST /api/v1/posts/102/comments
 router.post('/:postId/comments', (req, res) => {
   if (!req.body || !req.body.author || !req.body.content) {
     res.status(400).json({
@@ -141,17 +136,5 @@ router.post('/:postId/comments', (req, res) => {
       })
     })
 });
-
-module.exports = router;
-
-
-
-
-// CRUD OR BREAD = BROWSE, READ, EDIT, ADD, DELETE
-//BROWSE GETS ALL POSTS
-//READ GETS 1 POST BY ID 
-//EDIT IS UPDATING POST
-//CREATE NEW POST
-//DELETE THE POST 
 
 module.exports = router;
